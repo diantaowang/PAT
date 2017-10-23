@@ -13,7 +13,8 @@ void CharToInt(unsigned int a[], unsigned char b[], unsigned int *N)
 	*N = --i;
 }
 
-unsigned long long int SumRadix10(unsigned int n, unsigned int a[], unsigned long radix)
+unsigned long long int SumRadix10(unsigned int n, unsigned int a[],
+				  unsigned long radix)
 {
 	unsigned int i;
 	unsigned long long int p = a[0];
@@ -31,14 +32,15 @@ unsigned int FindMaxElement(unsigned int a[], unsigned int N)
 	return MaxElement;
 }
 
-int FindRadix(unsigned long long NumKnow, unsigned p[], unsigned long long  MaxRadix, unsigned long long MinRadix, unsigned N)
+long long FindRadix(unsigned long long NumKnow, unsigned p[],
+		    unsigned long long MaxRadix, unsigned long long MinRadix,
+		    unsigned N)
 {
 	unsigned long long MidRadix, tmp;
-	if(MaxRadix <= MinRadix + 1)
-		return 0;
+	if (MaxRadix <= MinRadix + 1)
+		return -1;
 	MidRadix = (MinRadix + MaxRadix) / 2;
 	tmp = SumRadix10(N, p, MidRadix);
-//    printf("%llu %llu %llu %llu %llu\n", MinRadix, MidRadix, MaxRadix, tmp, NumKnow);
 	if (tmp == NumKnow)
 		return MidRadix;
 	else if (tmp > NumKnow)
@@ -47,46 +49,33 @@ int FindRadix(unsigned long long NumKnow, unsigned p[], unsigned long long  MaxR
 		return FindRadix(NumKnow, p, MaxRadix, MidRadix, N);
 }
 
-int FindMinRadix(unsigned char knownStr[], unsigned char unknownStr[], unsigned int radix)
+int FindMinRadix(unsigned char knownStr[], unsigned char unknownStr[],
+		 unsigned int radix)
 {
 	unsigned int knownInt[11], unknownInt[11], N1, N2;
 	unsigned long long int tmp;
 	CharToInt(knownInt, knownStr, &N1);
 	CharToInt(unknownInt, unknownStr, &N2);
 	tmp = SumRadix10(N1, knownInt, radix);
-	return FindRadix(tmp, unknownInt, tmp+1, FindMaxElement(unknownInt, N2), N2);
+	return FindRadix(tmp, unknownInt, tmp + 2,
+			 FindMaxElement(unknownInt, N2), N2);
 }
 
 int main()
 {
 	unsigned char n1[11], n2[11];
-	unsigned int tag, radix; 
-	unsigned long long int flag;
+	unsigned int tag, radix;
+	long long int flag;
 
 	scanf("%s%s%u%u", n1, n2, &tag, &radix);
-	if(tag == 1)
+	if (tag == 1)
 		flag = FindMinRadix(n1, n2, radix);
 	else
 		flag = FindMinRadix(n2, n1, radix);
-	if(flag == 0)
+	if (flag == -1)
 		printf("Impossible\n");
-	else 
-		printf("%llu\n", flag);
-	
-	return 0;	
+	else
+		printf("%lld\n", flag);
+
+	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
