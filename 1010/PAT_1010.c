@@ -66,7 +66,6 @@ int main()
 	unsigned char n1[11], n2[11];
 	unsigned int tag, radix;
 	long long int flag;
-
 	scanf("%s%s%u%u", n1, n2, &tag, &radix);
 	if (tag == 1)
 		flag = FindMinRadix(n1, n2, radix);
