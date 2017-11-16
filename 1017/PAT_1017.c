@@ -1,10 +1,9 @@
 #include <stdio.h>
-#include <stdlib.h>
 
 int CUST[10010], UsedTime[10010];
-int Num = 0, WaitTime = 0;
+int WaitTime = 0;
 
-void swap(int* a, int* b)
+void swap(int *a, int *b)
 {
 	int tmp;
 	tmp = *a;
@@ -40,53 +39,49 @@ void QuickSort(int A[], int p, int r)
 	}
 }
 
-int CalcTime(int T[], int N, int K)
+void CalcTime(int T[], int N, int K)
 {
-	int i = 0, j, id = 0, min, t;
-	for(i=0; i<N && CUST[i] <= 61200; i++)
-	{
+	int i = 0, j, id = 0, min;
+	for (i = 0; i < N; i++) {
 		min = T[0];
 		id = 0;
-		for(j=1; j<K; j++)
-		{
-			if(min > T[j])
-			{
+		for (j = 1; j < K; j++) {
+			if (min > T[j]) {
 				min = T[j];
 				id = j;
 			}
 		}
-		if(CUST[i] < T[id])
+		if (CUST[i] <= T[id]) {
 			WaitTime += (T[id] - CUST[i]);
-		T[id] += UsedTime[i]*60;
-		/*t = T[id] - CUST[i];
-		if(t < 0)
-			t = 0;
-		WaitTime += t;
-//		printf("------: %d %d %d %d\n", id, T[id], CUST[i], t);
-		T[id] += UsedTime[i]*60;*/
+			T[id] += UsedTime[i] * 60;
+		} else
+			T[id] = CUST[i] + UsedTime[i] * 60;
 	}
-	return i;
 }
 
 int main()
 {
-	int N, K, i, count;
+	int N, K, i, j = 0, tmp;
 	int d[4], T[101];
 	char t[4];
 	scanf("%d%d", &N, &K);
-	for(i=0; i<N; i++)
-	{
+	for (i = 0; i < N; i++) {
 		scanf("%d%c%d%c", &d[0], &t[0], &d[1], &t[1]);
-		scanf("%d%c%d", &d[2], &t[2], &UsedTime[i]);
-		if(UsedTime[i] > 60)
-			UsedTime[i] = 60;
-		CUST[i] = d[2] + 60*d[1] + 3600*d[0];
+		scanf("%d%c%d", &d[2], &t[2], &UsedTime[j]);
+		tmp = d[2] + 60 * d[1] + 3600 * d[0];
+		if (tmp <= 61200) {
+			CUST[j] = tmp;
+			j++;
+		}
 	}
-	for(i=0; i<K; i++)
+	N = j;
+	for (i = 0; i < K; i++)
 		T[i] = 28800;
-	QuickSort(CUST, 0, N-1);
-	count = CalcTime(T, N, K);
-	if(count != 0)
-		printf("%.1f\n", (double)WaitTime/(double)count/60.0);
+	QuickSort(CUST, 0, N - 1);
+	CalcTime(T, N, K);
+	if (N != 0)
+		printf("%.1f\n", (double)WaitTime / (double)N / 60.0);
+	else
+		printf("0.0\n");
 	return 0;
 }
