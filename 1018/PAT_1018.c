@@ -18,10 +18,9 @@ typedef struct _node {
 
 int edge_w[500][501];
 int vertex_n[501];
-int path[501];
-int path_tmp[501];
+int path[501], path_tmp[501];
 int C, N, Sp, M, HeapSize;
-int MIN = 100000000;
+int NEED = 100000000, REST = 100000000;
 node *G[501];
 
 void Init_Single_Source(dist v_d[], int s)
@@ -134,38 +133,46 @@ void dijkstra(dist Q[], int s)
 	}
 }
 
-void dfs(node * s, int Sp, int N, int deep)
+void dfs(node * s, int Sp, int deep)
 {
 	node *p = s;
 	path_tmp[deep] = Sp;
 	if (p->prev == NULL) {
 		deep++;
 		path_tmp[deep] = p->id;
-//      for(int i=deep; i>=0; i--)
-//      	printf("%d ", path_tmp[i]);
-//      printf("\n");
-		int num = deep * C / 2 - N;
-		int num_abs = abs(num);
-		if (abs(MIN) > num_abs) {
+/*		printf("-------------------\n");
+	    for(int i=deep; i>=0; i--)
+	      	printf("%d ", path_tmp[i]);
+		printf("\n");*/
+		int need = 0, rest = 0;
+		for (int i = deep - 1; i >= 0; i--) {
+			if (rest + vertex_n[path_tmp[i]] < C / 2) {
+				need += (C / 2 - rest - vertex_n[path_tmp[i]]);
+				rest = 0;
+			} else
+				rest += (vertex_n[path_tmp[i]] - C / 2);
+		}
+		if (NEED >= need && REST > rest) {
 			int j = 0;
 			for (int i = deep; i >= 0; i--)
 				path[j++] = path_tmp[i];
 			path[deep + 1] = -1;
-			MIN = num;
+			NEED = need;
+			REST = rest;
 		}
 		return;
 	} else {
 		while (p->prev != NULL) {
-			dfs(G[p->id], p->id, N + vertex_n[p->id], deep + 1);
+			dfs(G[p->id], p->id, deep + 1);
 			p = p->prev;
 		}
-		dfs(G[p->id], p->id, N + vertex_n[p->id], deep + 1);
+		dfs(G[p->id], p->id, deep + 1);
 	}
 }
 
 int main()
 {
-	int i, x, y, w, n1, n2;
+	int i, x, y, w;
 	scanf("%d%d%d%d", &C, &N, &Sp, &M);
 	HeapSize = N + 1;
 	dist *vertex_d = (dist *) malloc(sizeof(dist) * (N + 2));
@@ -177,20 +184,13 @@ int main()
 		edge_w[y][x] = w;
 	}
 	dijkstra(vertex_d, 0);
-	dfs(G[Sp], Sp, vertex_n[Sp], 0);
-	if (MIN < 0) {
-		n1 = 0;
-		n2 = -MIN;
-	} else {
-		n1 = MIN;
-		n2 = 0;
-	}
-	printf("%d ", n1);
+	dfs(G[Sp], Sp, 0);
+	printf("%d ", NEED);
 	i = 1;
 	while (path[i] >= 0) {
 		printf("%d->", path[i - 1]);
 		i++;
 	}
-	printf("%d %d\n", path[i - 1], n2);
+	printf("%d %d\n", path[i - 1], REST);
 	return 0;
 }
