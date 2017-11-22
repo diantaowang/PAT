@@ -104,15 +104,15 @@ void relax(int u, int *u_d, int v, dist Q[])
 		Heap_Increase_Key(Q, index, new_d);
 		node *ptr = (node *) malloc(sizeof(node));
 		ptr->id = u;
-		ptr->prev = NULL;
-		if (G[v] != NULL)
+		ptr->prev = G[u];
+		if(G[v] != NULL)
 			free(G[v]);
 		G[v] = ptr;
 	} else if (Q[index].d == new_d) {
 		node *ptr = (node *) malloc(sizeof(node));
 		ptr->id = u;
-		ptr->prev = G[v];
-		G[v] = ptr;
+		ptr->prev = G[v]->prev;
+		G[v]->prev = ptr;
 	}
 }
 
@@ -138,12 +138,6 @@ void dfs(node * s, int Sp, int deep)
 	node *p = s;
 	path_tmp[deep] = Sp;
 	if (p->prev == NULL) {
-		deep++;
-		path_tmp[deep] = p->id;
-/*		printf("-------------------\n");
-	    for(int i=deep; i>=0; i--)
-	      	printf("%d ", path_tmp[i]);
-		printf("\n");*/
 		int need = 0, rest = 0;
 		for (int i = deep - 1; i >= 0; i--) {
 			if (rest + vertex_n[path_tmp[i]] < C / 2) {
@@ -152,6 +146,7 @@ void dfs(node * s, int Sp, int deep)
 			} else
 				rest += (vertex_n[path_tmp[i]] - C / 2);
 		}
+		printf("-------- %d %d\n", need, rest);
 		if (NEED >= need && REST > rest) {
 			int j = 0;
 			for (int i = deep; i >= 0; i--)
@@ -175,6 +170,8 @@ int main()
 	int i, x, y, w;
 	scanf("%d%d%d%d", &C, &N, &Sp, &M);
 	HeapSize = N + 1;
+	G[0] = (node*)malloc(sizeof(node));
+	G[0]->prev = NULL; G[0]->id = 0;
 	dist *vertex_d = (dist *) malloc(sizeof(dist) * (N + 2));
 	for (i = 1; i <= N; i++)
 		scanf("%d", &vertex_n[i]);
