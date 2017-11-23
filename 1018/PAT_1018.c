@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define INF       10000
+#define INF       10000000
 #define PARENT(i) ((i-1)>>1)
 #define LEFT(i)   (i<<1)
 #define RIGHT(i)  ((i<<1)+1)
@@ -16,12 +16,12 @@ typedef struct _node {
 	struct _node *prev;
 } node;
 
-int edge_w[500][501];
-int vertex_n[501];
-int path[501], path_tmp[501];
+int edge_w[510][510];
+int vertex_n[510], visited[510];
+int path[510], path_tmp[510];
 int C, N, Sp, M, HeapSize;
 int NEED = 100000000, REST = 100000000;
-node *G[501];
+node *G[510];
 
 void Init_Single_Source(dist v_d[], int s)
 {
@@ -93,7 +93,7 @@ int Heap_Increase_Key(dist A[], int i, int key)
 void relax(int u, int *u_d, int v, dist Q[])
 {
 	int index = 0;
-	for (int i = 0; i < 500; i++) {
+	for (int i = 0; i < 501; i++) {
 		if (Q[i].id == v) {
 			index = i;
 			break;
@@ -104,8 +104,8 @@ void relax(int u, int *u_d, int v, dist Q[])
 		Heap_Increase_Key(Q, index, new_d);
 		node *ptr = (node *) malloc(sizeof(node));
 		ptr->id = u;
-		ptr->prev = G[u];
-		if(G[v] != NULL)
+		ptr->prev = NULL;
+		if (G[v] != NULL)
 			free(G[v]);
 		G[v] = ptr;
 	} else if (Q[index].d == new_d) {
@@ -124,8 +124,9 @@ void dijkstra(dist Q[], int s)
 	Build_Min_Heap(Q);
 	for (int i = 0; i <= N; i++) {
 		u = Heap_Extract_Min(Q, u_d);
+		visited[u] = 1;
 		for (int j = 0; j < 500; j++) {
-			if (edge_w[u][j] != 0)
+			if (edge_w[u][j] != 0 && visited[j] != 1)
 				relax(u, u_d, j, Q);
 		}
 		if (u == Sp)
@@ -133,11 +134,11 @@ void dijkstra(dist Q[], int s)
 	}
 }
 
-void dfs(node * s, int Sp, int deep)
+void dfs(int id, int deep)
 {
-	node *p = s;
-	path_tmp[deep] = Sp;
-	if (p->prev == NULL) {
+	node *p = G[id];
+	path_tmp[deep] = id;
+	if (p->id == -1) {
 		int need = 0, rest = 0;
 		for (int i = deep - 1; i >= 0; i--) {
 			if (rest + vertex_n[path_tmp[i]] < C / 2) {
@@ -146,8 +147,7 @@ void dfs(node * s, int Sp, int deep)
 			} else
 				rest += (vertex_n[path_tmp[i]] - C / 2);
 		}
-		printf("-------- %d %d\n", need, rest);
-		if (NEED >= need && REST > rest) {
+		if (NEED > need || (NEED == need && REST > rest)) {
 			int j = 0;
 			for (int i = deep; i >= 0; i--)
 				path[j++] = path_tmp[i];
@@ -157,11 +157,10 @@ void dfs(node * s, int Sp, int deep)
 		}
 		return;
 	} else {
-		while (p->prev != NULL) {
-			dfs(G[p->id], p->id, deep + 1);
+		while (p != NULL) {
+			dfs(p->id, deep + 1);
 			p = p->prev;
 		}
-		dfs(G[p->id], p->id, deep + 1);
 	}
 }
 
@@ -170,8 +169,9 @@ int main()
 	int i, x, y, w;
 	scanf("%d%d%d%d", &C, &N, &Sp, &M);
 	HeapSize = N + 1;
-	G[0] = (node*)malloc(sizeof(node));
-	G[0]->prev = NULL; G[0]->id = 0;
+	G[0] = (node *) malloc(sizeof(node));
+	G[0]->prev = NULL;
+	G[0]->id = -1;
 	dist *vertex_d = (dist *) malloc(sizeof(dist) * (N + 2));
 	for (i = 1; i <= N; i++)
 		scanf("%d", &vertex_n[i]);
@@ -181,7 +181,7 @@ int main()
 		edge_w[y][x] = w;
 	}
 	dijkstra(vertex_d, 0);
-	dfs(G[Sp], Sp, 0);
+	dfs(Sp, 0);
 	printf("%d ", NEED);
 	i = 1;
 	while (path[i] >= 0) {
