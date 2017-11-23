@@ -125,7 +125,7 @@ void dijkstra(dist Q[], int s)
 	for (int i = 0; i <= N; i++) {
 		u = Heap_Extract_Min(Q, u_d);
 		visited[u] = 1;
-		for (int j = 0; j < 500; j++) {
+		for (int j = 0; j < 501; j++) {
 			if (edge_w[u][j] != 0 && visited[j] != 1)
 				relax(u, u_d, j, Q);
 		}
