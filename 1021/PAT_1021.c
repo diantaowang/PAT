@@ -6,13 +6,19 @@ typedef struct _node {
 	struct _node *next;
 } node;
 
-int V[10010], Max_t;
+int V[10010], Leaf[20010];
+int MAX = 0, Count = 0, Num = 0;
 
 void dfs_visit(node * T, int s, int deep)
 {
 	V[s] = 1;
-	if (deep > Max_t)
-		Max_t = deep;
+	if (deep > MAX) {
+		MAX = deep;
+		Count = 0;
+		Leaf[Count + Num] = s;
+	} else if (deep == MAX) {
+		Leaf[(++Count) + Num] = s;
+	}
 	node *p = (T + s)->next;
 	while (p != NULL) {
 		if (V[p->data] == 0)
@@ -44,32 +50,35 @@ void add_node(node * head, int data)
 	head->next = newE;
 }
 
+int comp(const void *a, const void *b)
+{
+	return *((int *)a) > *((int *)b) ? 1 : -1;
+}
+
 int main()
 {
-	int N, a, b, flag, MAX = 0;
+	int N, a, b, flag;
 	scanf("%d", &N);
-	int *root = (int *)malloc(sizeof(int) * (N + 2));
 	node *T = (node *) malloc(sizeof(node) * (N + 2));
 	for (int i = 0; i < N - 1; i++) {
 		scanf("%d%d", &a, &b);
 		add_node(&T[a], b);
 		add_node(&T[b], a);
 	}
-	for (int i = 1; i <= N; i++) {
-		Max_t = 0;
-		flag = dfs(T, N, i);
-		if (flag != 0) {
-			printf("Error: %d components\n", flag + 1);
-			return 0;
-		} else {
-			root[i] = Max_t;
-			if (MAX < Max_t)
-				MAX = Max_t;
+	flag = dfs(T, N, 1);
+	if (flag != 0) {
+		printf("Error: %d components\n", flag + 1);
+		return 0;
+	} else {
+		MAX = 0;
+		Num = Count + 1;
+		dfs(T, N, Leaf[0]);
+		Num += (Count + 1);
+		qsort(Leaf, Num, sizeof(int), comp);
+		for (int i = 0; i < Num; i++) {
+			if (Leaf[i] != Leaf[i + 1])
+				printf("%d\n", Leaf[i]);
 		}
-	}
-	for (int i = 1; i <= N; i++) {
-		if (root[i] == MAX)
-			printf("%d\n", i);
 	}
 	return 0;
 }
