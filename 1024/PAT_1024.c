@@ -4,7 +4,7 @@ int N;
 
 void creat_new_num(int Num[])
 {
-	int neg[20], c[20];
+	int neg[100], c[100];
 	for (int i = 0; i < N; i++) {
 		neg[i] = Num[N - 1 - i];
 	}
@@ -37,24 +37,27 @@ int is_palindromic_num(int Num[])
 
 int main()
 {
-	long long int result;
-	int K, Num[20], i;
-	char num_tmp[20];
+	int K, Num[100], i;
+	char num_tmp[100];
 	scanf("%s%d", num_tmp, &K);
 	for (i = 0; num_tmp[i] != '\0'; i++) {
 		Num[i] = num_tmp[i] - '0';
 	}
 	N = i;
+	if (is_palindromic_num(Num) == 1) {
+		for (int j = 0; j < N; j++) {
+			printf("%d", Num[j]);
+		}
+		printf("\n0\n");
+		return 0;
+	}
 	for (i = 0; i < K; i++) {
 		creat_new_num(Num);
 		if (is_palindromic_num(Num) == 1 || i == K - 1) {
-			result = Num[N - 1];
-			long long int tmp = 1;
-			for (int j = N - 2; j >= 0; j--) {
-				tmp *= 10;
-				result += tmp * Num[j];
+			for (int j = 0; j < N; j++) {
+				printf("%d", Num[j]);
 			}
-			printf("%lld\n%d\n", result, i + 1);
+			printf("\n%d\n", i + 1);
 			return 0;
 		}
 	}
