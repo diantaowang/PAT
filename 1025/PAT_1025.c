@@ -3,10 +3,7 @@
 
 typedef struct _record {
 	long long int id;
-	int score;
-	int group;
-	int frank;
-	int lrank;
+	int score, group, frank, lrank;
 } record;
 
 record T[30010];
@@ -25,41 +22,48 @@ int comp(const void *a, const void *b)
 	}
 }
 
+void pta_rank(record * h, int n, int type)
+{
+	int i = 0, R = 1, repeat = 0, rank;
+	qsort(h, n, sizeof(record), comp);
+	(h + i)->frank = 1;
+	(h + i)->lrank = 1;
+	for (i = 1; i < n; i++) {
+		R++;
+		if ((h + i)->score < (h + i - 1)->score) {
+			repeat = 0;
+		} else if ((h + i)->score == (h + i - 1)->score) {
+			repeat++;
+		}
+		rank = (repeat == 0) ? R : R - repeat;
+		if (type == 0)
+			(h + i)->lrank = rank;
+		else
+			(h + i)->frank = rank;
+	}
+}
+
 int main()
 {
-	int N, K, Num = 0, R, repeat = 0;
-	int count[101] = { 0 };
+	int N, Num = 0, t = 0, K[110];
 	scanf("%d", &N);
 	for (int i = 0; i < N; i++) {
-		scanf("%d", &K);
-		for (int j = 0; j < K; j++) {
+		scanf("%d", &K[i]);
+		for (int j = 0; j < K[i]; j++) {
 			scanf("%lld%d", &T[Num].id, &T[Num].score);
 			T[Num].group = i + 1;
 			Num++;
 		}
 	}
-	qsort(T, Num, sizeof(record), comp);
-	T[0].frank = 1;
-   	T[0].lrank = 1;	
-	R = 1;
-	for(int i=1; i<Num; i++)
-	{
-		if(T[i].score < T[i-1].score)
-		{
-			R++;
-			R += repeat;
-			T[i].frank = R;
-		}
-		else if(T[i].score == T[i-1].score)
-		{
-			repeat++;
-			T[i].frank = R;
-		}
-		
+	for (int i = 0; i < N; i++) {
+		pta_rank(T + t, K[i], 0);
+		t += K[i];
 	}
+	pta_rank(T, Num, 1);
 	printf("%d\n", Num);
 	for (int i = 0; i < Num; i++) {
-		printf("%lld %d %d %d\n", T[i].id, T[i].frank, T[i].group, T[i].score);
+		printf("%013lld %d %d %d\n", T[i].id, T[i].frank, T[i].group,
+		       T[i].lrank);
 	}
 	return 0;
 }
