@@ -25,7 +25,7 @@ int comp(const void *a, const void *b)
 	else if (flag == 0 && p->id > n->id)
 		return 1;
 	else
-		return 0;
+		return -1;
 }
 
 int comp_num(const void *a, const void *b)
@@ -43,8 +43,11 @@ int comp_num(const void *a, const void *b)
 
 void find_str(StrHead a[], char s[], int h, int t)
 {
-	if (h >= t)
+	if (h >= t) {
+		if (h == t && strcmp(s, a[h].s) == 0)
+			Index = h;
 		return;
+	}
 	int mid = (h + t) / 2;
 	int flag = strcmp(s, a[mid].s);
 	if (flag == 0) {
@@ -58,8 +61,11 @@ void find_str(StrHead a[], char s[], int h, int t)
 
 void find_num(NumHead a[], int s, int h, int t)
 {
-	if (h >= t)
+	if (h >= t) {
+		if (h == t && (a[h].y - s) == 0)
+			Index = h;
 		return;
+	}
 	int mid = (h + t) / 2;
 	int flag = s - a[mid].y;
 	if (flag == 0) {
@@ -75,12 +81,7 @@ void print_num(NumHead a[], int s, int N)
 {
 	int i;
 	Index = -1;
-	if (s == a[0].y)
-		Index = 0;
-	else if (s == a[N - 1].y)
-		Index = N - 1;
-	else
-		find_num(a, s, 0, N - 1);
+	find_num(a, s, 0, N - 1);
 	if (Index == -1)
 		printf("Not Found\n");
 	else {
@@ -89,8 +90,8 @@ void print_num(NumHead a[], int s, int N)
 				break;
 		}
 		i = i + 1;
-		for (; s == a[i].y; i++)
-			printf("%d\n", a[i].id);
+		for (; a[i].y == s; i++)
+			printf("%07d\n", a[i].id);
 	}
 }
 
@@ -98,12 +99,7 @@ void print(StrHead a[], char s[], int N)
 {
 	int i;
 	Index = -1;
-	if (strcmp(a[0].s, s) == 0)
-		Index = 0;
-	else if (strcmp(a[N - 1].s, s) == 0)
-		Index = N - 1;
-	else
-		find_str(a, s, 0, N - 1);
+	find_str(a, s, 0, N - 1);
 	if (Index == -1)
 		printf("Not Found\n");
 	else {
@@ -113,7 +109,7 @@ void print(StrHead a[], char s[], int N)
 		}
 		i = i + 1;
 		for (; strcmp(s, a[i].s) == 0; i++)
-			printf("%d\n", a[i].id);
+			printf("%07d\n", a[i].id);
 	}
 }
 
@@ -158,7 +154,7 @@ int main()
 			printf("%s\n", str);
 		} else if (type == 5) {
 			scanf("%d", &data);
-			printf("%d\n", data);
+			printf("%04d\n", data);
 		} else {
 			fgets(str, 90, stdin);
 			printf("%s", str);
