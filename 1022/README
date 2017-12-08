@@ -1,0 +1,7 @@
+PAT 1022. Digital Library (30)
+
+有两点需要注意：
+
+(1) the published year -- 输出必须是4位，否则第二个测试点通不过
+
+(2) a book title -- 输出必须是7位，否则最后两个测试点通不过
