@@ -2,29 +2,36 @@
 #include <stdlib.h>
 
 typedef struct _player {
-	int arr, start;
+	int arr[4], serve[4];
+	int atime, stime;
 	int play, wait;
 	int vip, end;
 } player;
 
 typedef struct _table {
 	int num, vip;
-	int free;
+	int fretime;
 } table;
 
 table T[110];
 
 int comp(const void *a, const void *b)
 {
-	return ((player *)a)->arr > ((player *)b)->arr ? 1 : -1;
+	player *p, *n;
+	p = (player *) a;
+	n = (player *) b;
+	return p->atime > n->atime ? 1 : -1;
 }
 
 int comp2(const void *a, const void *b)
 {
-	return ((player *)a)->start > ((player *)b)->start ? 1 : -1;
+	player *p, *n;
+	p = (player *) a;
+	n = (player *) b;
+	return p->stime > n->stime ? 1 : -1;
 }
 
-/*void updata(player * p, table * t, int type, int i, int j)
+void updata(player * p, table * t, int type, int i, int j)
 {
 	p->end = 1;
 	if (t->fretime < 75600)
@@ -44,7 +51,7 @@ int comp2(const void *a, const void *b)
 		t->fretime += p->play * 60;
 	}
 //	printf("-------------type: %d  P_vip:%d   P_id: %d  T_id: %d  P_atime: %d  fretime: %d\n", type, p->vip, i, j, p->atime, t->fretime);
-}*/
+}
 
 int insert(player P[], int N, int K, int id)
 {
@@ -96,17 +103,20 @@ int insert(player P[], int N, int K, int id)
 
 int main()
 {
-	int N, K, M, h, m, s;
+	int N, K, M, j = 0;
 	scanf("%d", &N);
 	player *P = (player *) malloc(sizeof(player) * N);
 	for (int i = 0; i < N; i++) {
-		scanf("%d:%d:%d", &h, &m, &s);
-		scanf("%d%d", &P[i].play, &P[i].vip);
-		if (P[i].play > 120)
-			P[i].play = 120;
-		P[i].arr = 3600 * h + 60 * m + s;
-		P[i].end = 0;
+		scanf("%d:%d:%d", &P[j].arr[0], &P[j].arr[1], &P[j].arr[2]);
+		scanf("%d%d", &P[j].play, &P[j].vip);
+		if (P[j].play > 120)
+			P[j].play = 120;
+		P[j].atime = 3600 * P[j].arr[0] + 60 * P[j].arr[1] + P[j].arr[2];
+		P[j].end = 0;
+		if (P[j].atime < 75600)
+			j++;
 	}
+	N = j;
 	qsort(P, N, sizeof(player), comp);
 	scanf("%d%d", &K, &M);
 	for (int i = 1; i <= K; i++)
@@ -116,6 +126,8 @@ int main()
 		scanf("%d", &vipnum);
 		T[vipnum].vip = 1;
 	}
+//	for(int i=0; i<N; i++)
+//		printf("**************** %02d:%02d:%02d %d %d %d\n", P[i].arr[0], P[i].arr[1], P[i].arr[2], P[i].atime, P[i].play, P[i].vip);
 	int flag;
 	for (int i = 0; i < N;) {
 		flag = 1;
