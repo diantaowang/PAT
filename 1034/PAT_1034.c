@@ -1,62 +1,97 @@
 #include <stdio.h>
-#include <strings.h>
+#include <string.h>
 #include <stdlib.h>
 
-typedef struct _call{
-	int id[3];
-	int tid[3];
-	int time;
+typedef struct _call {
+	char s1[4];
+	char s2[4];
+	int tim;
 } call;
+
+int K, Num = 0, visited[2010];
+int G[2010][2010], Time[2010];
+char Name[2010][4], user[2010][4];
 
 int comp(const void *a, const void *b)
 {
-	return *((int *)a) > *((int *)b) ? 1 : -1;
+	int flag = strcmp((char *)a, (char *)b);
+	if (flag > 0)
+		return 1;
+	else
+		return -1;
 }
 
-int find(int num, int id[], int l, int r)
+int find(char *key, char user[][4], int l, int r)
 {
-	int mid = (l+r)/2;
-	if(l > r)
-		return -1;
-	else if(id[mid] == num)
+	int mid = (l + r) / 2;
+	int flag = strcmp(key, user[mid]);
+	if (flag == 0)
 		return mid;
-	else if(id[mid] > num)
-		find(num, id, l, mid-1);
+	else if (flag < 0)
+		return find(key, user, l, mid - 1);
 	else
-		find(num, id, mid+1, r);
-	return -1;
+		return find(key, user, mid + 1, r);
+}
+
+void dfs_visit(int G[][2010], int index, int *info)
+{
+	visited[index] = 1;
+	info[0] += 1;
+	info[1] += Time[index];
+	if (info[3] < Time[index]) {
+		info[2] = index;
+		info[3] = Time[index];
+	}
+	for (int i = 0; i <= Num; i++) {
+		if (G[index][i] != 0 && visited[i] == 0)
+			dfs_visit(G, i, info);
+	}
+}
+
+void dfs(int G[][2010], int *count, int gang[][3])
+{
+	int info[5];
+	for (int i = 0; i <= Num; i++) {
+		for (int j = 0; j < 5; j++)
+			info[j] = 0;
+		if (visited[i] == 0) {
+			dfs_visit(G, i, info);
+			if (info[0] > 2 && info[1] > 2 * K) {
+				gang[*count][0] = info[2];
+				gang[*count][1] = info[0];
+				(*count)++;
+			}
+		}
+	}
 }
 
 int main()
 {
-	int N, K, Num = 0;
-	char user[2][4];
+	int N, t1, t2, count = 0, gang[2010][3];
 	scanf("%d%d", &N, &K);
-	call *R=(call *)malloc(sizeof(call)*N);
-	int *ID_t = (int *)malloc(sizeof(int)*N*2);
-	int *ID = (int *)malloc(sizeof(int)*N*2);
-	for(int i=0, j=0; i<N; i++, j += 2)
-	{		
-		scanf("%s %s %d", user[0], user[1], &R[i].time);
-		R[i].tid[0] = 10000*user[0][0] + 100*user[0][1] + user[0][2];
-		R[i].tid[1] = 10000*user[1][0] + 100*user[1][1] + user[1][2];
-		ID_t[j] = R[i].tid[0];
-		ID_t[j+1] = R[i].tid[1];
+	call *R = (call *) malloc(sizeof(call) * N);
+	for (int i = 0, j = 0; i < N; i++, j += 2) {
+		scanf("%s%s%d", R[i].s1, R[i].s2, &R[i].tim);
+		strcpy(Name[j], R[i].s1);
+		strcpy(Name[j + 1], R[i].s2);
 	}
-	qsort(ID_t, 2*N, sizeof(int), comp);
-	ID[0] = ID_t[0];
-	for(int i = 1, t = ID[0]; i<2*N; i++)
-	{
-		if(t != ID_t[i])
-		{
-			t = ID_t[i];
-			ID[++Num] = t;
-		}
+	qsort(Name, 2 * N, sizeof(char) * 4, comp);
+	strcpy(user[0], Name[0]);
+	for (int i = 1; i < 2 * N; i++) {
+		if (strcmp(user[Num], Name[i]) != 0)
+			strcpy(user[++Num], Name[i]);
 	}
+	for (int i = 0; i < N; i++) {
+		t1 = find(R[i].s1, user, 0, Num);
+		t2 = find(R[i].s2, user, 0, Num);
+		Time[t1] += R[i].tim;
+		Time[t2] += R[i].tim;
+		G[t1][t2] = 1;
+		G[t2][t1] = 1;
+	}
+	dfs(G, &count, gang);
+	printf("%d\n", count);
+	for (int i = 0; i < count; i++)
+		printf("%s %d\n", user[gang[i][0]], gang[i][1]);
 	return 0;
 }
-
-//	for(int i=0; i<Num; i++)
-//		printf("%d:%c%c%c\n", ID_t[i], ID[i]/10000, ID[i]%10000/100, ID[i]%100);
-//	for(int i=0; i<2*N; i++)
-//		printf("%d:%c%c%c\n", ID_t[i], (char)(ID_t[i]/10000), (char)(ID_t[i]%10000/100), (char)(ID_t[i]%100));
