@@ -76,7 +76,7 @@ void dfs_visit(head * G, int index, int *info)
 	}
 }
 
-void dfs(head * G, int *count, int gang[][4])
+void dfs(head * G, int *count, int gang[][2])
 {
 	int info[5];
 	for (int i = 0; i < Num; i++) {
@@ -98,7 +98,7 @@ int main()
 {
 	int N, ID_t[2020], ID[2020];
 	char user[2][4];
-	int count = 0, g[2020][4];
+	int count = 0, g[2020][2];
 	scanf("%d%d", &N, &K);
 	call *R = (call *) malloc(sizeof(call) * N);
 	for (int i = 0, j = 0; i < N; i++, j += 2) {
@@ -124,6 +124,7 @@ int main()
 		printf("0\n");
 	else {
 		printf("%d\n", count);
+		qsort(g, count, sizeof(int)*2, comp);
 		for (int i = 0, t; i < count; i++) {
 			t = g[i][0];
 			printf("%c%c%c %d\n", ID[t] / 10000, ID[t] % 10000 / 100, ID[t] % 100, g[i][1]);

@@ -21,6 +21,11 @@ int comp(const void *a, const void *b)
 		return -1;
 }
 
+int comp2(const void *a, const void *b)
+{
+	return *((int *)a) > *((int *)b) ? 1 : -1;
+}
+
 int find(char *key, char user[][4], int l, int r)
 {
 	int mid = (l + r) / 2;
@@ -48,7 +53,7 @@ void dfs_visit(int G[][2010], int index, int *info)
 	}
 }
 
-void dfs(int G[][2010], int *count, int gang[][3])
+void dfs(int G[][2010], int *count, int gang[][2])
 {
 	int info[5];
 	for (int i = 0; i <= Num; i++) {
@@ -67,7 +72,7 @@ void dfs(int G[][2010], int *count, int gang[][3])
 
 int main()
 {
-	int N, t1, t2, count = 0, gang[2010][3];
+	int N, t1, t2, count = 0, gang[2010][2];
 	scanf("%d%d", &N, &K);
 	call *R = (call *) malloc(sizeof(call) * N);
 	for (int i = 0, j = 0; i < N; i++, j += 2) {
@@ -91,6 +96,7 @@ int main()
 	}
 	dfs(G, &count, gang);
 	printf("%d\n", count);
+	qsort(gang, count, sizeof(int) * 2, comp2);
 	for (int i = 0; i < count; i++)
 		printf("%s %d\n", user[gang[i][0]], gang[i][1]);
 	return 0;
