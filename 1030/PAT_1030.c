@@ -1,67 +1,52 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define INF 1000000
-
-typedef struct _dist {
-	int d;
-	int end;
-} dist;
+#define INF 999999999
 
 typedef struct _node {
-	int id;
-	struct _node *prev;
+	int num;
+	int pre[501];
 } node;
 
 int edge_w[510][510], cost[510][510];
-int visited[510];
+int visited[510], dist[510];
 int path[510], path_tmp[510];
-int money = INF, count;
-node *G[510];
+int money = INF, count, distance;
+node G[510];
 
-int find_min(dist Q[], int n)
+int find_min(int Q[], int n)
 {
-	int index = -1, min = 2 * INF;
+	int index = -1, min = INF;
 	for (int i = 0; i < n; i++) {
-		if (min > Q[i].d && Q[i].end == 0) {
+		if (min > Q[i] && visited[i] == 0) {
 			index = i;
-			min = Q[i].d;
+			min = Q[i];
 		}
 	}
 	return index;
 }
 
-void relax(int u, int v, dist Q[])
+void relax(int u, int v, int Q[])
 {
-	int new_d = Q[u].d + edge_w[u][v];
-	if (Q[v].d > new_d) {
-		node *ptr = (node *) malloc(sizeof(node));
-		ptr->id = u;
-		ptr->prev = NULL;
-		if (G[v] != NULL)
-			free(G[v]);
-		G[v] = ptr;
-		Q[v].d = new_d;
-	} else if (Q[v].d == new_d) {
-		node *ptr = (node *) malloc(sizeof(node));
-		ptr->id = u;
-		ptr->prev = G[v]->prev;
-		G[v]->prev = ptr;
+	int new_d = Q[u] + edge_w[u][v];
+	if (Q[v] > new_d) {
+		G[v].num = 1;
+		G[v].pre[0] = u;
+		Q[v] = new_d;
+	} else if (Q[v] == new_d) {
+		G[v].pre[G[v].num] = u;
+		G[v].num++;
 	}
 }
 
-void dijkstra(dist Q[], int s, int d, int N)
+void dijkstra(int Q[], int s, int d, int N)
 {
-	for (int i = 0; i < N; i++) {
-		Q[i].end = 0;
-		Q[i].d = INF;
-	}
-	Q[s].d = 0;
-	G[s] = NULL;
+	for (int i = 0; i < N; i++)
+		Q[i] = INF;
+	Q[s] = 0;
 	for (int i = 0; i < N; i++) {
 		int u = find_min(Q, N);
 		visited[u] = 1;
-		Q[u].end = 1;
 		for (int j = 0; j < N; j++) {
 			if (edge_w[u][j] != INF && visited[j] != 1)
 				relax(u, j, Q);
@@ -71,34 +56,37 @@ void dijkstra(dist Q[], int s, int d, int N)
 	}
 }
 
-void dfs(int s, int d, int deep, int m)
+void dfs(int s, int d, int deep)
 {
-	node *p = G[s];
 	path_tmp[deep] = s;
-	if (p->id == d) {
-		m += cost[s][d];
+	if (s == d) {
+		int m = 0, w = 0;
+		for (int i = deep; i > 0; i--) {
+			int t1 = path_tmp[i], t2 = path_tmp[i - 1];
+			m += cost[t1][t2];
+			w += edge_w[t1][t2];
+		}
 		if (money > m) {
 			money = m;
+			distance = w;
 			count = deep + 1;
 			for (int i = 0; i < count; i++)
 				path[i] = path_tmp[i];
-			path[count] = d;
 		}
-	} else {
-		while (p != NULL) {
-			dfs(p->id, d, deep + 1, m + cost[s][p->id]);
-			p = p->prev;
-		}
+		return;
 	}
+	for (int i = 0; i < G[s].num; i++)
+		dfs(G[s].pre[i], d, deep + 1);
 }
 
 int main()
 {
-	int N, M, s, d, x, y, w, c, distance = 0;
+	int N, M, s, d;
 	scanf("%d%d%d%d", &N, &M, &s, &d);
-	for(int i=0; i<N; i++)
-		for(int j=0; j<N; j++)
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < N; j++)
 			edge_w[i][j] = INF;
+	int x, y, w, c;
 	for (int i = 0; i < M; i++) {
 		scanf("%d%d%d%d", &x, &y, &w, &c);
 		edge_w[x][y] = w;
@@ -106,13 +94,11 @@ int main()
 		cost[x][y] = c;
 		cost[y][x] = c;
 	}
-	dist *vertex_d = (dist *) malloc(sizeof(dist) * N);
-	dijkstra(vertex_d, s, d, N);
-	dfs(d, s, 0, 0);
-	for (int i = count; i > 0; i--) {
+	dijkstra(dist, s, d, N);
+	dfs(d, s, 0);
+	for (int i = count - 1; i >= 0; i--) {
 		printf("%d ", path[i]);
-		distance += edge_w[path[i]][path[i - 1]];
 	}
-	printf("%d %d %d\n", path[0], distance, money);
+	printf("%d %d\n", distance, money);
 	return 0;
 }
