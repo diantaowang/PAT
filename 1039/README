@@ -1,0 +1,5 @@
+PAT 1039. Course List for Student (25)
+
+(1). PAT_1039_old.c: the last test point isn't accepted, time out.
+
+(2). PAT_1039.c: AC. But I don't know why the first conversion function I writed is wrong in the last test point.
