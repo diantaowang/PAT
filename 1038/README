@@ -1,0 +1,7 @@
+PAT 1038. Recover the Smallest Number (30)
+
+Problem solving ideas:
+
+(1). char a[10], char b[10]. if(strcmp(a + b, b + a)) > 0, we can judge that the a[] must be behind b[].
+
+(2). What should be careful is that all the input number are zero. The test point 2 is that situation.
