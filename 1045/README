@@ -1,0 +1,11 @@
+PAT 1045. Favorite Color Stripe (30)
+
+解题思路：
+
+(1). 将 the given stripe 数组中大于N，以及不在 the favorite order 数组中的数据剔除.
+
+(2). 贪心算法：从 the given stripe 数组中最后一个数据开始，计算该数据与其之后的数据可构成的最长序列值
+
+     (最多遍历M-1次MAX[]数组)，赋给该数据对应的MAX[]数组元素，最终MAX[]中最大的值，即为所求. 
+     
+     算法复杂度为：O(ML).
