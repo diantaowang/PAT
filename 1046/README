@@ -1,0 +1,14 @@
+PAT 1046. Shortest Distance (20)
+
+Problem solving ideas: 
+
+Suppose "src" is less than "dst" and the total length of thr loop is "L" ->
+
+(1). distance[src, dst] = distance[1, dst] - distance[1, src].
+
+(2). or another answer ~distance[src, dst] = L - distance[src, dst].
+
+(3). the final answer = min(distance[src, dst], ~distance[src, dst]).
+
+
+
