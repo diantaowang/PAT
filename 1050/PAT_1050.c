@@ -31,20 +31,14 @@ int main()
 	len1 = (int)strlen(s1) - 1;
 	len2 = (int)strlen(s2) - 1;
 	qsort(s2, len2, sizeof(char), comp);
-//	printf("%s%s\n", s1, s2);
 	int flag;
 	for (int i = 0; i < len1; i++) {
 		if (s1[i] < s2[0] || s1[i] > s2[len2 - 1]) {
-			printf("-----------\n");
 			s[n++] = s1[i];
 		} else {
-			flag = find(s[i], 0, len2 - 1);
-			if (flag == 0) {
-				printf("XXXXXXXXXXXXXX\n");
+			flag = find(s1[i], 0, len2 - 1);
+			if (flag == 0)
 				s[n++] = s1[i];
-			}
-			else
-				printf("????????????????\n");
 		}
 	}
 	s[n] = '\0';
