@@ -34,15 +34,19 @@ int main()
 		scanf("%d%d", &list[addr].key, &list[addr].next);
 		list[addr].addr = addr;
 	}
+	if (start == -1) {
+		printf("0 -1\n");
+		return 0;
+	}
 	for (int i = start;;) {
 		list[i].visited = 1;
 		if (list[i].next == -1)
 			break;
 		i = list[i].next;
 	}
-	qsort(list, n, sizeof(node), comp);
+	qsort(list, 100010, sizeof(node), comp);
 	int num = 0;
-	while (list[num].key < 999999 && list[num].visited == 1) {
+	while (list[num].key < 999999 && list[num].visited == 1 && num < n) {
 		num++;
 	}
 	printf("%d %05d\n", num, list[0].addr);
