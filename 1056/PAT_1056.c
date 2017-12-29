@@ -13,8 +13,7 @@ int main()
 	int *old_p = old_e;
 	int num = n, max = -1, index = 0;
 	while (num > 1) {
-		int num_n, count;
-		num_n = 0;
+		int num_n = 0, count;
 		count = num / m;
 		if (num % m > 0)
 			count++;
@@ -33,6 +32,7 @@ int main()
 		if (num_n == 1)
 			rank[new_p[0]] = 1;
 		num = num_n;
+		num_n = 0;
 		int *t = new_p;
 		new_p = old_p;
 		old_p = t;
