@@ -3,7 +3,7 @@
 
 int m[60], num[51][10010];
 
-int comp(void const *a, void const *b)
+int comp(const void *a, const void *b)
 {
 	return *((int *)a) > *((int *)b) ? 1 : -1;
 }
