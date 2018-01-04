@@ -1,71 +1,71 @@
 #include <stdio.h>
-#include <time.h>
 #include <stdlib.h>
+#include <time.h>
 
-typedef struct _node{
-	int id;
-	int num;
-} node;
-
-int mysort(node *p[], int l, int r)
+int mysort(int A[], int l, int r)
 {
-	for(int i=l+1; i<=r; i++) {
+	for (int i = l + 1; i <= r; i++) {
 		int num;
-		for(int j = i; j > l && p[j-1]->num > p[j]->num; j--) {
-			num = p[j]->num;
-			p[j]->num = p[j-1]->num;
-			p[j-1]->num = num;
+		for (int j = i; j > l && A[j - 1] > A[j]; j--) {
+			num = A[j];
+			A[j] = A[j - 1];
+			A[j - 1] = num;
 		}
 	}
-	return l + (l + r) / 2;
+	int mid = l + (r - l) / 2;
+	return A[mid];
 }
 
-int partition(node *A[], int l, int r)
+int partition(int A[], int l, int r, int mid)
 {
-	return 0;
+	int i = l - 1;
+	for (int j = l; j <= r; j++) {
+		if (A[j] <= mid) {
+			i++;
+			if (i != j) {
+				int t = A[i];
+				A[i] = A[j];
+				A[j] = t;
+			}
+		}
+	}
+	return i;
 }
 
-int my_select(node *A[], int l, int r, int index)
+int myselect(int A[], int l, int r, int index)
 {
-	if(l == r)
-		return A[l]->id;
+	if (l == r)
+		return A[l];
+	int len = r - l + 1;
+	int *medians = (int *)malloc(sizeof(int) * (len / 5 + 1));
+
 	int i, n = 0;
-	node *p[100000];
-	for(i=l; i<=r; i+=5) {
-		int id;
-		id = mysort(A, i, i+4);
-		p[n]->id = id;
-		p[n]->num = A[id]->num;
-		n++;	
-	}
-	if(i != r + 1) {
+	for (i = l; i + 4 <= r; i += 5)
+		medians[n++] = mysort(A, i, i + 4);
+	if (i <= r)
+		medians[n++] = mysort(A, i, r);
+	int mid = myselect(medians, 0, n - 1, (n + 1) / 2);
 
-	}
-	int q = partition(A, l, r);
+	free(medians);
+
+	int q = partition(A, l, r, mid);
 	int k = q - l + 1;
 	if (k == index)
-		return A[q]->num;
+		return A[q];
 	else if (k > index)
-		return my_select(A, l, q, index);
+		return myselect(A, l, q - 1, index);
 	else
-		return my_select(A, q + 1, r, index - k);
+		return myselect(A, q + 1, r, index - k);
 }
 
 int main()
 {
-	int m, n;
-	node color[500000];
-	node *p[500000];
+	int color[500000], m, n;
 	scanf("%d%d", &m, &n);
-	for (int i = 0; i < n * m; i++) {
-		scanf("%d", &color[i].num);
-		color[i].id = i;
-		p[i] = &color[i];
-	}
-	/*mysort(p, 0, n*m-1);
-	for(int i=0; i<n*m; i++) 
-		printf("%d %d\n", color[i].num, color[i].id);*/
-	/*int mid = (n * m) / 2 + 1;
-	printf("%d\n", my_select(color, 0, n*m-1, mid));*/
+	for (int i = 0; i < n * m; i++)
+		scanf("%d", &color[i]);
+	//color[i] = rand();
+	int mid = (n * m) / 2 + 1;
+	printf("%d\n", myselect(color, 0, n * m - 1, mid));
 	return 0;
 }
