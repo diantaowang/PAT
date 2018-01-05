@@ -1,0 +1,9 @@
+PAT 1057. Stack (30)
+
+解题思路:
+
+(1). 使用树状数组求解: 一篇关于树状数组很好的博文
+
+     http://www.hawstein.com/posts/binary-indexed-trees.html
+
+(2). 需要注意的一点是: 处理重复元素的时候, 可能找不到第 median 个元素, 此时需要找到最接近 idx, 返回 idx + 1.
