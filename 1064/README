@@ -1,0 +1,17 @@
+1064. Complete Binary Search Tree (30)
+
+解题思路:
+
+(1). Complete Binary Search Tree 的先序遍历即为数组的从小到大排序, 这个题可以化简为: "递归求解树根" 的问题.
+
+     Complete Binary Search Tree 求解树根其实就是找中间元素(除去最后一层).
+     
+(2). 二叉树的层次遍历可以利用father结点与lchild结点, rchild结点之间的下标关系实现:
+
+     lchild_id = 2 * father_id + 1;
+     
+     rchild_id = 2 * father_id + 2;
+     
+(3). PAT_1064.c -> AC, don't bulid CBST.
+
+     PAT_1064_old.c -> AC, builded CBST.
