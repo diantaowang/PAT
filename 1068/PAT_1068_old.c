@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int dp[110], path[10010][110];
+int dp[10010][110], path[10010][110];
 
 int comp(const void *a, const void *b)
 {
@@ -11,10 +11,11 @@ int comp(const void *a, const void *b)
 void find(int n, int m, int *v)
 {
 	for (int i = 1; i <= n; i++) {
-		for (int j = m; j >= 1; j--) {
+		for (int j = 1; j <= m; j++) {
+			dp[i][j] = dp[i - 1][j];
 			if (j >= v[i - 1]) {
-				if (dp[j - v[i - 1]] + v[i - 1] >= dp[j]) {
-					dp[j] = dp[j - v[i - 1]] + v[i - 1];
+				if (dp[i - 1][j - v[i - 1]] + v[i - 1] >= dp[i - 1][j]) {
+					dp[i][j] = dp[i - 1][j - v[i - 1]] + v[i - 1];
 					path[i][j] = 1;
 				}
 			}
@@ -30,7 +31,7 @@ int main()
 		scanf("%d", &v[i]);
 	qsort(v, n, sizeof(int), comp);
 	find(n, m, v);
-	if (dp[m] < m)
+	if (dp[n][m] < m)
 		printf("No Solution\n");
 	else {
 		for (int i = n, j = m; i > 0; i--) {

@@ -1,0 +1,27 @@
+PAT 1068. Find More Coins (30)
+
+解题思路：
+
+PS: 之前一直没有接触“背包问题”, 虽然一直尝试使用动态规划, 但还是 "too young, too simple" , 对动态规划知之甚少.
+
+这是一个典型的“0/1背包问题”, 输入数据为: n, m, v[n]. 
+
+dp[i][j]: 在前i个硬币中选取一定个数的硬币(其和记作sum), 在 sum <= j 的前提下, 找到一个最大的sum, 并记 dp[i][j] = sum;
+
+状态转移方程: dp[i][j] = max( dp[i - 1][j], dp[i - 1][j - v[i - 1]] + v[i - 1]] );
+
+如果 dp[n][m] == m, 则有解(可能不止一个); 否则无解, 输出"No Solution";
+
+当然我认为最大的难点在于: 最优路径(字典序)的选取.
+
+先把v[]降序排序, 其目的就是要保证自上而下"递归"时, 每次可能使用的v[i]都是余下数组v[]中最小的元素, 这样在最终输出时,
+
+只要从dp[n][m]开始, 递归输出v[i]即可, 这里利用二维数组path[][]辅助记录v[]中哪个元素被使用到.
+
+PS: 文字表述太难了~~
+
+这有两篇关于“0/1背包问题”, “动态规划”不错的博文(比我强太多!):
+
+http://www.hawstein.com/posts/dp-knapsack.html 
+
+http://www.hawstein.com/posts/dp-novice-to-advanced.html 
