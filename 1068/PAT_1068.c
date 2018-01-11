@@ -13,8 +13,8 @@ void find(int n, int m, int *v)
 	for (int i = 1; i <= n; i++) {
 		for (int j = m; j >= 1; j--) {
 			if (j >= v[i - 1] && dp[j - v[i - 1]] + v[i - 1] >= dp[j]) {
-					dp[j] = dp[j - v[i - 1]] + v[i - 1];
-					path[i][j] = 1;
+				dp[j] = dp[j - v[i - 1]] + v[i - 1];
+				path[i][j] = 1;
 			}
 		}
 	}
